@@ -17,15 +17,18 @@ var watch = require('gulp-watch');
 var Builder = require('systemjs-builder');
 var del = require('del');
 var fs = require('fs');
-var join = require('path').join;
+var path = require('path');
+var join = path.join;
 var runSequence = require('run-sequence');
 var semver = require('semver');
 var series = require('stream-series');
 
-var http = require('http');
 var express = require('express');
 var serveStatic = require('serve-static');
 var openResource = require('open');
+
+var tinylr = require('tiny-lr')();
+var connectLivereload = require('connect-livereload');
 
 // --------------
 // Configuration.
@@ -59,7 +62,11 @@ var PATH = {
   }
 };
 
+var PORT = 5555;
+var LIVE_RELOAD_PORT = 4002;
+
 var ng2Builder = new Builder({
+  defaultJSExtensions: true,
   paths: {
     'angular2/*': 'node_modules/angular2/es6/dev/*.js',
     rx: 'node_modules/angular2/node_modules/rx/dist/rx.js'
@@ -87,8 +94,6 @@ var tsProject = tsc.createProject('tsconfig.json', {
 
 var semverReleases = ['major', 'premajor', 'minor', 'preminor', 'patch',
                       'prepatch', 'prerelease'];
-
-var port = 5555;
 
 // --------------
 // Clean.
@@ -125,7 +130,7 @@ gulp.task('clean.tmp', function(done) {
 // Build dev.
 
 gulp.task('build.ng2.dev', function () {
-  ng2Builder.build('angular2/router', PATH.dest.dev.router, {});
+  ng2Builder.build('angular2/router - angular2/angular2', PATH.dest.dev.router, {});
   return ng2Builder.build('angular2/angular2', PATH.dest.dev.ng2, {});
 });
 
@@ -171,7 +176,7 @@ gulp.task('build.dev', function (done) {
 // Build prod.
 
 gulp.task('build.ng2.prod', function () {
-  ng2Builder.build('angular2/router', join('tmp', 'router.js'), {});
+  ng2Builder.build('angular2/router - angular2/angular2', join('tmp', 'router.js'), {});
   return ng2Builder.build('angular2/angular2', join('tmp', 'angular2.js'), {});
 });
 
@@ -269,36 +274,51 @@ gulp.task('bump.reset', function() {
 // --------------
 // Serve dev.
 
-gulp.task('serve.dev', ['build.dev'], function () {
-  var app;
-
-  watch('./app/**', function () {
-    gulp.start('build.app.dev');
+gulp.task('serve.dev', ['build.dev', 'livereload'], function () {
+  watch('./app/**', function (e) {
+    runSequence('build.app.dev', function () {
+      notifyLiveReload(e);
+    });
   });
-
   serveSPA('dev');
 });
 
 // --------------
 // Serve prod.
 
-gulp.task('serve.prod', ['build.prod'], function () {
-  var app;
-
-  watch('./app/**', function () {
-    gulp.start('build.app.prod');
+gulp.task('serve.prod', ['build.prod', 'livereload'], function () {
+  watch('./app/**', function (e) {
+    runSequence('build.app.prod', function () {
+      notifyLiveReload(e);
+    });
   });
-
   serveSPA('prod');
+});
+
+// --------------
+// Livereload.
+
+gulp.task('livereload', function() {
+  tinylr.listen(LIVE_RELOAD_PORT);
 });
 
 // --------------
 // Utils.
 
+function notifyLiveReload(e) {
+  var fileName = e.path;
+  tinylr.changed({
+    body: {
+      files: [fileName]
+    }
+  });
+}
+
 function transformPath(env) {
   var v = '?v=' + getVersion();
   return function (filepath) {
-    arguments[0] = filepath.replace('/' + PATH.dest[env].all, '') + v;
+    var filename = filepath.replace('/' + PATH.dest[env].all, '') + v;
+    arguments[0] = join(APP_BASE, filename);
     return inject.transform.apply(inject.transform, arguments);
   };
 }
@@ -335,18 +355,18 @@ function registerBumpTasks() {
         .pipe(gulp.dest('./'));
     });
     gulp.task(bumpTaskName, function(done) {
-        runSequence(semverTaskName, 'build.app.prod', done);
+      runSequence(semverTaskName, 'build.app.prod', done);
     });
   });
 }
 
 function serveSPA(env) {
   var app;
-  app = express().use(serveStatic(join(__dirname, PATH.dest[env].all)));
-  app.all('*', function (req, res, next) {
+  app = express().use(APP_BASE, connectLivereload({ port: LIVE_RELOAD_PORT }), serveStatic(join(__dirname, PATH.dest[env].all)));
+  app.all(APP_BASE + '*', function (req, res, next) {
     res.sendFile(join(__dirname, PATH.dest[env].all, 'index.html'));
   });
-  app.listen(port, function () {
-    openResource('http://localhost:' + port);
+  app.listen(PORT, function () {
+    openResource('http://localhost:' + PORT + APP_BASE);
   });
 }

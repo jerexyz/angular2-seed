@@ -1,5 +1,4 @@
-/// <reference path="../typings/tsd.d.ts" />
-import {Component, View, bootstrap, NgFor} from 'angular2/angular2';
+import {Component, View, bootstrap} from 'angular2/angular2';
 import {RouteConfig, RouterOutlet, RouterLink, routerInjectables} from 'angular2/router';
 
 import {Home} from './components/home/home';
@@ -8,7 +7,7 @@ import {NamesList} from './services/NameList';
 
 @Component({
   selector: 'app',
-  viewInjector: [NamesList]
+  viewBindings: [NamesList]
 })
 @RouteConfig([
   { path: '/', component: Home, as: 'home' },

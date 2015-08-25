@@ -35,6 +35,7 @@ gulp serve.prod
 │   │       ├── home.html
 │   │       └── home.ts
 │   ├── services
+│   ├── typings
 │   ├── app.css
 │   ├── app.html
 │   ├── app.ts
@@ -43,7 +44,7 @@ gulp serve.prod
 ├── dist
 │   ├── dev
 │   └── prod
-├── typings
+├── tsd_typings
 ├── gulpfile.js
 ├── package.json
 ├── tsconfig.json
@@ -67,9 +68,14 @@ Add reference to the installed library in `PATH.src.lib`.
 
 # Contributors
 
-[<img alt="mgechev" src="https://avatars.githubusercontent.com/u/455023?v=3&s=117" width="117">](https://github.com/mgechev) |[<img alt="ludohenin" src="https://avatars.githubusercontent.com/u/1011516?v=3&s=117" width="117">](https://github.com/ludohenin) |[<img alt="robertpenner" src="https://avatars.githubusercontent.com/u/79827?v=3&s=117" width="117">](https://github.com/robertpenner) |[<img alt="jgolla" src="https://avatars.githubusercontent.com/u/1542447?v=3&s=117" width="117">](https://github.com/jgolla) |
-:---: |:---: |:---: |:---: |
-[mgechev](https://github.com/mgechev) |[ludohenin](https://github.com/ludohenin) |[robertpenner](https://github.com/robertpenner) |[jgolla](https://github.com/jgolla) |
+[<img alt="mgechev" src="https://avatars.githubusercontent.com/u/455023?v=3&s=117" width="117">](https://github.com/mgechev) |[<img alt="ludohenin" src="https://avatars.githubusercontent.com/u/1011516?v=3&s=117" width="117">](https://github.com/ludohenin) |[<img alt="NathanWalker" src="https://avatars.githubusercontent.com/u/457187?v=3&s=117" width="117">](https://github.com/NathanWalker) |[<img alt="redian" src="https://avatars.githubusercontent.com/u/816941?v=3&s=117" width="117">](https://github.com/redian) |[<img alt="dstockhammer" src="https://avatars.githubusercontent.com/u/1156637?v=3&s=117" width="117">](https://github.com/dstockhammer) |[<img alt="robertpenner" src="https://avatars.githubusercontent.com/u/79827?v=3&s=117" width="117">](https://github.com/robertpenner) |
+:---: |:---: |:---: |:---: |:---: |:---: |
+[mgechev](https://github.com/mgechev) |[ludohenin](https://github.com/ludohenin) |[NathanWalker](https://github.com/NathanWalker) |[redian](https://github.com/redian) |[dstockhammer](https://github.com/dstockhammer) |[robertpenner](https://github.com/robertpenner) |
+
+[<img alt="jgolla" src="https://avatars.githubusercontent.com/u/1542447?v=3&s=117" width="117">](https://github.com/jgolla) |
+:---: |
+[jgolla](https://github.com/jgolla) |
+
 # Change Log
 
 You can follow the [Angular 2 change log here](https://github.com/angular/angular/blob/master/CHANGELOG.md).
